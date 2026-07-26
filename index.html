@@ -1,1 +1,262 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Pro de Goles - Fútbol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-3 flex flex-col items-center">
+
+    <div class="w-full max-w-lg bg-slate-900 rounded-2xl shadow-2xl p-5 border border-slate-800">
+        <h1 class="text-xl font-extrabold text-center text-emerald-400 mb-1">Calculadora Pro de Goles (Dixon-Coles)</h1>
+        <p class="text-xs text-center text-slate-400 mb-5">Motor de análisis predictivo de alta precisión para apuestas</p>
+
+        <!-- SECCIÓN 1: DATOS DE LOS EQUIPOS -->
+        <div class="space-y-4">
+            <!-- Local -->
+            <div class="bg-slate-800/70 p-3.5 rounded-xl border border-slate-700">
+                <label class="block text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">Equipo Local</label>
+                <input type="text" id="homeTeam" placeholder="Ej. Real Madrid" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-white mb-3">
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <span class="text-slate-400 block mb-1">xG a Favor (Promedio)</span>
+                        <input type="number" id="homeXgFor" step="0.05" value="1.70" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-center text-emerald-300 font-bold">
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block mb-1">xG en Contra (Concede)</span>
+                        <input type="number" id="homeXgAg" step="0.05" value="0.85" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-center text-rose-300 font-bold">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visitante -->
+            <div class="bg-slate-800/70 p-3.5 rounded-xl border border-slate-700">
+                <label class="block text-xs font-bold text-blue-400 uppercase tracking-wider mb-2">Equipo Visitante</label>
+                <input type="text" id="awayTeam" placeholder="Ej. Barcelona" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-white mb-3">
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <span class="text-slate-400 block mb-1">xG a Favor (Promedio)</span>
+                        <input type="number" id="awayXgFor" step="0.05" value="1.40" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-center text-blue-300 font-bold">
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block mb-1">xG en Contra (Concede)</span>
+                        <input type="number" id="awayXgAg" step="0.05" value="1.10" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-center text-rose-300 font-bold">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: AJUSTES CONTEXTUALES (SLIDERS) -->
+            <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 space-y-3">
+                <span class="text-xs font-semibold text-slate-300 block">Ajustes Tácticos y Contexto</span>
+                
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span>Potencia Ofensiva Local (Bajas/Motivación)</span>
+                        <span id="homeFactorVal" class="text-emerald-400 font-bold">100%</span>
+                    </div>
+                    <input type="range" id="homeFactor" min="80" max="120" value="100" class="w-full accent-emerald-500 cursor-pointer" oninput="document.getElementById('homeFactorVal').innerText = this.value + '%'">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span>Potencia Ofensiva Visitante (Bajas/Motivación)</span>
+                        <span id="awayFactorVal" class="text-blue-400 font-bold">100%</span>
+                    </div>
+                    <input type="range" id="awayFactor" min="80" max="120" value="100" class="w-full accent-blue-500 cursor-pointer" oninput="document.getElementById('awayFactorVal').innerText = this.value + '%'">
+                </div>
+            </div>
+
+            <!-- Botón Ejecutar -->
+            <button onclick="calcularModeloPro()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold py-3.5 rounded-xl transition shadow-lg text-sm uppercase tracking-wider">
+                Calcular Predicción Ultra Precisa
+            </button>
+        </div>
+
+        <!-- SECCIÓN 3: RESULTADOS Y ESTADÍSTICAS -->
+        <div id="results" class="mt-6 hidden space-y-5">
+            <hr class="border-slate-800">
+            
+            <!-- Tabla de Goles Esperados (Lambda) -->
+            <div>
+                <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">1. Goles Esperados (λ) y Parámetros</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border border-slate-800 bg-slate-950 rounded-lg overflow-hidden">
+                        <thead class="bg-slate-800 text-slate-300">
+                            <tr>
+                                <th class="p-2.5">Métrica Analítica</th>
+                                <th class="p-2.5 text-center text-emerald-400">Local</th>
+                                <th class="p-2.5 text-center text-blue-400">Visitante</th>
+                            </tr>
+                        </thead>
+                        <tbody id="statsTableBody" class="divide-y divide-slate-900">
+                            <!-- Inyectado por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mercados de Goles Avanzados (Más / Menos & Ambos Marcan) -->
+            <div>
+                <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">2. Proyecciones de Goles y Cuotas Justas</h2>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <!-- Ambos Marcan -->
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700 flex flex-col justify-between">
+                        <span class="text-slate-400">Ambos Marcan (BTTS)</span>
+                        <div class="flex justify-between items-baseline mt-2">
+                            <span id="bttsProb" class="font-extrabold text-emerald-400 text-base">--%</span>
+                            <span id="bttsOdd" class="text-slate-400 font-mono text-[11px]">Cuota: --</span>
+                        </div>
+                    </div>
+                    <!-- Ambos No Marcan -->
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700 flex flex-col justify-between">
+                        <span class="text-slate-400">Ambos No Marcan</span>
+                        <div class="flex justify-between items-baseline mt-2">
+                            <span id="nbttsProb" class="font-extrabold text-slate-300 text-base">--%</span>
+                            <span id="nbttsOdd" class="text-slate-400 font-mono text-[11px]">Cuota: --</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Líneas de Más / Menos -->
+                <div class="mt-2 space-y-1.5 text-xs">
+                    <div class="bg-slate-800/40 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+                        <span class="text-slate-300 font-medium">Más de 1.5 Goles (<span id="over15Prob" class="font-bold text-emerald-400">--%</span>)</span>
+                        <span class="text-slate-400 font-mono text-[11px]">Cuota Justa: <strong id="over15Odd" class="text-white">--</strong></span>
+                    </div>
+                    <div class="bg-slate-800/40 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+                        <span class="text-slate-300 font-medium">Más de 2.5 Goles (<span id="over25Prob" class="font-bold text-emerald-400">--%</span>)</span>
+                        <span class="text-slate-400 font-mono text-[11px]">Cuota Justa: <strong id="over25Odd" class="text-white">--</strong></span>
+                    </div>
+                    <div class="bg-slate-800/40 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+                        <span class="text-slate-300 font-medium">Más de 3.5 Goles (<span id="over35Prob" class="font-bold text-emerald-400">--%</span>)</span>
+                        <span class="text-slate-400 font-mono text-[11px]">Cuota Justa: <strong id="over35Odd" class="text-white">--</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Marcadores Exactos -->
+            <div>
+                <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">3. Top Marcadores Más Probables</h2>
+                <div id="topScores" class="space-y-1.5 text-xs">
+                    <!-- Inyectado por JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE CÁLCULO DIXON-COLES Y MERCADOS -->
+    <script>
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let res = 1;
+            for (let i = 2; i <= n; i++) res *= i;
+            return res;
+        }
+
+        function poisson(lambda, k) {
+            return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+        }
+
+        // Función de corrección Dixon-Coles para marcadores bajos (0-0, 1-0, 0-1, 1-1)
+        function dixonColesCorrection(h, a, lambdaH, lambdaA, rho = -0.1) {
+            if (h === 0 && a === 0) return 1 - (lambdaH * lambdaA * rho);
+            if (h === 0 && a === 1) return 1 + (lambdaH * rho);
+            if (h === 1 && a === 0) return 1 + (lambdaA * rho);
+            if (h === 1 && a === 1) return 1 - rho;
+            return 1.0;
+        }
+
+        function calcularModeloPro() {
+            const hName = document.getElementById('homeTeam').value || 'Local';
+            const aName = document.getElementById('awayTeam').value || 'Visitante';
+            
+            const hFor = parseFloat(document.getElementById('homeXgFor').value);
+            const hAg = parseFloat(document.getElementById('homeXgAg').value);
+            const aFor = parseFloat(document.getElementById('awayXgFor').value);
+            const aAg = parseFloat(document.getElementById('awayXgAg').value);
+
+            const hFactor = parseFloat(document.getElementById('homeFactor').value) / 100;
+            const aFactor = parseFloat(document.getElementById('awayFactor').value) / 100;
+
+            // Cálculo base de Lambda con factores tácticos aplicados
+            // Lambda Local = (Ataque Local * Defensa Visitante) ajustado
+            const rawLambdaHome = Math.max(0.2, ((hFor + aAg) / 2) * hFactor * 1.08); // Factor leve de localía incluido
+            const rawLambdaAway = Math.max(0.2, ((aFor + hAg) / 2) * aFactor);
+
+            document.getElementById('results').classList.remove('hidden');
+
+            // Llenar tabla de estadísticas
+            const statsBody = document.getElementById('statsTableBody');
+            statsBody.innerHTML = `
+                <tr><td class="p-2.5 font-semibold text-slate-200">Goles Esperados (λ Final)</td><td class="p-2.5 text-center font-extrabold text-emerald-400 text-sm">${rawLambdaHome.toFixed(2)}</td><td class="p-2.5 text-center font-extrabold text-blue-400 text-sm">${rawLambdaAway.toFixed(2)}</td></tr>
+                <tr><td class="p-2.5 text-slate-400">xG Ofensivo Base</td><td class="p-2.5 text-center">${hFor}</td><td class="p-2.5 text-center">${aFor}</td></tr>
+                <tr><td class="p-2.5 text-slate-400">xG Defensivo Rival</td><td class="p-2.5 text-center">${aAg}</td><td class="p-2.5 text-center">${hAg}</td></tr>
+            `;
+
+            // Matriz de Probabilidades con Dixon-Coles
+            let matrix = [];
+            let probBTTS = 0;
+            let probOver15 = 0;
+            let probOver25 = 0;
+            let probOver35 = 0;
+
+            for (let h = 0; h <= 6; h++) {
+                for (let a = 0; a <= 6; a++) {
+                    let basePoisson = poisson(rawLambdaHome, h) * poisson(rawLambdaAway, a);
+                    let correction = dixonColesCorrection(h, a, rawLambdaHome, rawLambdaAway);
+                    let p = Math.max(0, basePoisson * correction);
+                    
+                    matrix.push({ h, a, p });
+
+                    // Acumuladores de mercado
+                    if (h > 0 && a > 0) probBTTS += p;
+                    if (h + a > 1.5) probOver15 += p;
+                    if (h + a > 2.5) probOver25 += p;
+                    if (h + a > 3.5) probOver35 += p;
+                }
+            }
+
+            // Normalización de la matriz para sumar exacto 100%
+            let totalSum = matrix.reduce((sum, item) => sum + item.p, 0);
+            matrix.forEach(item => item.p = item.p / totalSum);
+
+            // Recalcular mercados con matriz normalizada
+            probBTTS = matrix.filter(item => item.h > 0 && item.a > 0).reduce((s, i) => s + i.p, 0);
+            probOver15 = matrix.filter(item => (item.h + item.a) > 1.5).reduce((s, i) => s + i.p, 0);
+            probOver25 = matrix.filter(item => (item.h + item.a) > 2.5).reduce((s, i) => s + i.p, 0);
+            probOver35 = matrix.filter(item => (item.h + item.a) > 3.5).reduce((s, i) => s + i.p, 0);
+
+            // Renderizar Mercados y Cuotas Justas (Cuota = 1 / Probabilidad)
+            const setMarket = (probId, oddId, prob) => {
+                document.getElementById(probId).innerText = (prob * 100).toFixed(1) + '%';
+                let fairOdd = prob > 0 ? (1 / prob).toFixed(2) : '99.00';
+                document.getElementById(oddId).innerText = fairOdd;
+            };
+
+            setMarket('bttsProb', 'bttsOdd', probBTTS);
+            setMarket('nbttsProb', 'nbttsOdd', 1 - probBTTS);
+            setMarket('over15Prob', 'over15Odd', probOver15);
+            setMarket('over25Prob', 'over25Odd', probOver25);
+            setMarket('over35Prob', 'over35Odd', probOver35);
+
+            // Ordenar marcadores por probabilidad
+            matrix.sort((x, y) => y.p - x.p);
+
+            // Top 4 Marcadores
+            const topScoresDiv = document.getElementById('topScores');
+            topScoresDiv.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                let item = matrix[i];
+                topScoresDiv.innerHTML += `
+                    <div class="bg-slate-800/50 p-2.5 rounded-xl flex justify-between items-center border border-slate-700/60">
+                        <span class="text-slate-200 font-bold">${hName} ${item.h} - ${item.a} ${aName}</span>
+                        <span class="text-emerald-400 font-extrabold">${(item.p * 100).toFixed(1)}% <span class="text-slate-400 font-mono text-[10px] ml-1">(${(1/item.p).toFixed(2)})</span></span>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
