@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,7 +10,7 @@
 
     <div class="w-full max-w-lg bg-slate-900 rounded-2xl shadow-2xl p-5 border border-slate-800">
         <h1 class="text-xl font-extrabold text-center text-emerald-400 mb-1">Calculadora Pro de Goles (Dixon-Coles)</h1>
-        <p class="text-xs text-center text-slate-400 mb-5">Motor de análisis predictivo de alta precisión para apuestas</p>
+        <p class="text-xs text-center text-slate-400 mb-5">Modelo Avanzado: 1X2, Hándicaps, Goles y Cuotas con Valor</p>
 
         <!-- SECCIÓN 1: DATOS DE LOS EQUIPOS -->
         <div class="space-y-4">
@@ -50,18 +49,16 @@
             <!-- SECCIÓN 2: AJUSTES CONTEXTUALES (SLIDERS) -->
             <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800 space-y-3">
                 <span class="text-xs font-semibold text-slate-300 block">Ajustes Tácticos y Contexto</span>
-                
                 <div>
                     <div class="flex justify-between text-xs text-slate-400 mb-1">
-                        <span>Potencia Ofensiva Local (Bajas/Motivación)</span>
+                        <span>Potencia Ofensiva Local</span>
                         <span id="homeFactorVal" class="text-emerald-400 font-bold">100%</span>
                     </div>
                     <input type="range" id="homeFactor" min="80" max="120" value="100" class="w-full accent-emerald-500 cursor-pointer" oninput="document.getElementById('homeFactorVal').innerText = this.value + '%'">
                 </div>
-
                 <div>
                     <div class="flex justify-between text-xs text-slate-400 mb-1">
-                        <span>Potencia Ofensiva Visitante (Bajas/Motivación)</span>
+                        <span>Potencia Ofensiva Visitante</span>
                         <span id="awayFactorVal" class="text-blue-400 font-bold">100%</span>
                     </div>
                     <input type="range" id="awayFactor" min="80" max="120" value="100" class="w-full accent-blue-500 cursor-pointer" oninput="document.getElementById('awayFactorVal').innerText = this.value + '%'">
@@ -97,48 +94,102 @@
                 </div>
             </div>
 
-            <!-- Mercados de Goles Avanzados (Más / Menos & Ambos Marcan) -->
+            <!-- Mercado 1X2 y Doble Oportunidad -->
             <div>
-                <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">2. Proyecciones de Goles y Cuotas Justas</h2>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <!-- Ambos Marcan -->
-                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700 flex flex-col justify-between">
-                        <span class="text-slate-400">Ambos Marcan (BTTS)</span>
-                        <div class="flex justify-between items-baseline mt-2">
-                            <span id="bttsProb" class="font-extrabold text-emerald-400 text-base">--%</span>
-                            <span id="bttsOdd" class="text-slate-400 font-mono text-[11px]">Cuota: --</span>
-                        </div>
+                <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">2. Resultado del Partido (1X2 y Doble Oportunidad)</h2>
+                <div class="grid grid-cols-3 gap-2 text-xs mb-2">
+                    <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700 text-center">
+                        <span class="text-slate-400 block">Gana Local (1)</span>
+                        <span id="prob1" class="font-extrabold text-emerald-400 text-sm block mt-1">--%</span>
+                        <span class="text-slate-400 text-[10px] font-mono">Cuota: <strong id="odd1" class="text-white">--</strong></span>
                     </div>
-                    <!-- Ambos No Marcan -->
-                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700 flex flex-col justify-between">
+                    <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700 text-center">
+                        <span class="text-slate-400 block">Empate (X)</span>
+                        <span id="probX" class="font-extrabold text-amber-400 text-sm block mt-1">--%</span>
+                        <span class="text-slate-400 text-[10px] font-mono">Cuota: <strong id="oddX" class="text-white">--</strong></span>
+                    </div>
+                    <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700 text-center">
+                        <span class="text-slate-400 block">Gana Visita (2)</span>
+                        <span id="prob2" class="font-extrabold text-blue-400 text-sm block mt-1">--%</span>
+                        <span class="text-slate-400 text-[10px] font-mono">Cuota: <strong id="odd2" class="text-white">--</strong></span>
+                    </div>
+                </div>
+                <!-- Doble Oportunidad -->
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                    <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-800 text-center">
+                        <span class="text-slate-400 block">1X (Local o Empate)</span>
+                        <span id="prob1X" class="font-bold text-slate-200">--%</span> <span class="text-[10px] font-mono text-slate-400">(<span id="odd1X">--</span>)</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-800 text-center">
+                        <span class="text-slate-400 block">12 (Local o Visita)</span>
+                        <span id="prob12" class="font-bold text-slate-200">--%</span> <span class="text-[10px] font-mono text-slate-400">(<span id="odd12">--</span>)</span>
+                    </div>
+                    <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-800 text-center">
+                        <span class="text-slate-400 block">X2 (Empate o Visita)</span>
+                        <span id="probX2" class="font-bold text-slate-200">--%</span> <span class="text-[10px] font-mono text-slate-400">(<span id="oddX2">--</span>)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mercados de Goles (Más y Menos) -->
+            <div>
+                <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">3. Mercados de Goles (Más / Menos y BTTS)</h2>
+                <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+                    <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center">
+                        <span class="text-slate-400">Ambos Marcan (BTTS)</span>
+                        <div class="text-right"><span id="bttsProb" class="font-extrabold text-emerald-400 text-sm block">--%</span><span class="text-[10px] font-mono text-slate-400">Cuota: <strong id="bttsOdd" class="text-white">--</strong></span></div>
+                    </div>
+                    <div class="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center">
                         <span class="text-slate-400">Ambos No Marcan</span>
-                        <div class="flex justify-between items-baseline mt-2">
-                            <span id="nbttsProb" class="font-extrabold text-slate-300 text-base">--%</span>
-                            <span id="nbttsOdd" class="text-slate-400 font-mono text-[11px]">Cuota: --</span>
-                        </div>
+                        <div class="text-right"><span id="nbttsProb" class="font-extrabold text-slate-300 text-sm block">--%</span><span class="text-[10px] font-mono text-slate-400">Cuota: <strong id="nbttsOdd" class="text-white">--</strong></span></div>
                     </div>
                 </div>
 
-                <!-- Líneas de Más / Menos -->
-                <div class="mt-2 space-y-1.5 text-xs">
+                <div class="space-y-1.5 text-xs">
+                    <!-- Over / Under 1.5 -->
+                    <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-800 grid grid-cols-2 gap-2 text-center">
+                        <div><span class="text-slate-400">Más 1.5:</span> <strong id="over15Prob" class="text-emerald-400">--%</strong> (<span id="over15Odd" class="font-mono text-white">--</span>)</div>
+                        <div><span class="text-slate-400">Menos 1.5:</span> <strong id="under15Prob" class="text-amber-400">--%</strong> (<span id="under15Odd" class="font-mono text-white">--</span>)</div>
+                    </div>
+                    <!-- Over / Under 2.5 -->
+                    <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-800 grid grid-cols-2 gap-2 text-center">
+                        <div><span class="text-slate-400">Más 2.5:</span> <strong id="over25Prob" class="text-emerald-400">--%</strong> (<span id="over25Odd" class="font-mono text-white">--</span>)</div>
+                        <div><span class="text-slate-400">Menos 2.5:</span> <strong id="under25Prob" class="text-amber-400">--%</strong> (<span id="under25Odd" class="font-mono text-white">--</span>)</div>
+                    </div>
+                    <!-- Over / Under 3.5 -->
+                    <div class="bg-slate-800/40 p-2 rounded-lg border border-slate-800 grid grid-cols-2 gap-2 text-center">
+                        <div><span class="text-slate-400">Más 3.5:</span> <strong id="over35Prob" class="text-emerald-400">--%</strong> (<span id="over35Odd" class="font-mono text-white">--</span>)</div>
+                        <div><span class="text-slate-400">Menos 3.5:</span> <strong id="under35Prob" class="text-amber-400">--%</strong> (<span id="under35Odd" class="font-mono text-white">--</span>)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hándicap Asiático -->
+            <div>
+                <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">4. Probabilidades de Hándicap Asiático</h2>
+                <div class="grid grid-cols-2 gap-2 text-xs">
                     <div class="bg-slate-800/40 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
-                        <span class="text-slate-300 font-medium">Más de 1.5 Goles (<span id="over15Prob" class="font-bold text-emerald-400">--%</span>)</span>
-                        <span class="text-slate-400 font-mono text-[11px]">Cuota Justa: <strong id="over15Odd" class="text-white">--</strong></span>
+                        <span class="text-slate-300">Local -0.5</span>
+                        <div class="text-right"><strong id="hAhMinus05" class="text-emerald-400">--%</strong> <span class="text-[10px] font-mono text-slate-400">(<strong id="oddAhMinus05" class="text-white">--</strong>)</span></div>
                     </div>
                     <div class="bg-slate-800/40 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
-                        <span class="text-slate-300 font-medium">Más de 2.5 Goles (<span id="over25Prob" class="font-bold text-emerald-400">--%</span>)</span>
-                        <span class="text-slate-400 font-mono text-[11px]">Cuota Justa: <strong id="over25Odd" class="text-white">--</strong></span>
+                        <span class="text-slate-300">Visita +0.5</span>
+                        <div class="text-right"><strong id="hAhPlus05" class="text-blue-400">--%</strong> <span class="text-[10px] font-mono text-slate-400">(<strong id="oddAhPlus05" class="text-white">--</strong>)</span></div>
                     </div>
                     <div class="bg-slate-800/40 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
-                        <span class="text-slate-300 font-medium">Más de 3.5 Goles (<span id="over35Prob" class="font-bold text-emerald-400">--%</span>)</span>
-                        <span class="text-slate-400 font-mono text-[11px]">Cuota Justa: <strong id="over35Odd" class="text-white">--</strong></span>
+                        <span class="text-slate-300">Local -1.5</span>
+                        <div class="text-right"><strong id="hAhMinus15" class="text-emerald-400">--%</strong> <span class="text-[10px] font-mono text-slate-400">(<strong id="oddAhMinus15" class="text-white">--</strong>)</span></div>
+                    </div>
+                    <div class="bg-slate-800/40 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+                        <span class="text-slate-300">Visita +1.5</span>
+                        <div class="text-right"><strong id="hAhPlus15" class="text-blue-400">--%</strong> <span class="text-[10px] font-mono text-slate-400">(<strong id="oddAhPlus15" class="text-white">--</strong>)</span></div>
                     </div>
                 </div>
             </div>
 
             <!-- Top Marcadores Exactos -->
             <div>
-                <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">3. Top Marcadores Más Probables</h2>
+                <h2 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">5. Top Marcadores Más Probables</h2>
                 <div id="topScores" class="space-y-1.5 text-xs">
                     <!-- Inyectado por JS -->
                 </div>
@@ -146,7 +197,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE CÁLCULO DIXON-COLES Y MERCADOS -->
+    <!-- SCRIPT DE CÁLCULO -->
     <script>
         function factorial(n) {
             if (n === 0 || n === 1) return 1;
@@ -159,7 +210,6 @@
             return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
         }
 
-        // Función de corrección Dixon-Coles para marcadores bajos (0-0, 1-0, 0-1, 1-1)
         function dixonColesCorrection(h, a, lambdaH, lambdaA, rho = -0.1) {
             if (h === 0 && a === 0) return 1 - (lambdaH * lambdaA * rho);
             if (h === 0 && a === 1) return 1 + (lambdaH * rho);
@@ -180,14 +230,11 @@
             const hFactor = parseFloat(document.getElementById('homeFactor').value) / 100;
             const aFactor = parseFloat(document.getElementById('awayFactor').value) / 100;
 
-            // Cálculo base de Lambda con factores tácticos aplicados
-            // Lambda Local = (Ataque Local * Defensa Visitante) ajustado
-            const rawLambdaHome = Math.max(0.2, ((hFor + aAg) / 2) * hFactor * 1.08); // Factor leve de localía incluido
+            const rawLambdaHome = Math.max(0.2, ((hFor + aAg) / 2) * hFactor * 1.08);
             const rawLambdaAway = Math.max(0.2, ((aFor + hAg) / 2) * aFactor);
 
             document.getElementById('results').classList.remove('hidden');
 
-            // Llenar tabla de estadísticas
             const statsBody = document.getElementById('statsTableBody');
             statsBody.innerHTML = `
                 <tr><td class="p-2.5 font-semibold text-slate-200">Goles Esperados (λ Final)</td><td class="p-2.5 text-center font-extrabold text-emerald-400 text-sm">${rawLambdaHome.toFixed(2)}</td><td class="p-2.5 text-center font-extrabold text-blue-400 text-sm">${rawLambdaAway.toFixed(2)}</td></tr>
@@ -195,56 +242,80 @@
                 <tr><td class="p-2.5 text-slate-400">xG Defensivo Rival</td><td class="p-2.5 text-center">${aAg}</td><td class="p-2.5 text-center">${hAg}</td></tr>
             `;
 
-            // Matriz de Probabilidades con Dixon-Coles
             let matrix = [];
-            let probBTTS = 0;
-            let probOver15 = 0;
-            let probOver25 = 0;
-            let probOver35 = 0;
-
             for (let h = 0; h <= 6; h++) {
                 for (let a = 0; a <= 6; a++) {
                     let basePoisson = poisson(rawLambdaHome, h) * poisson(rawLambdaAway, a);
                     let correction = dixonColesCorrection(h, a, rawLambdaHome, rawLambdaAway);
                     let p = Math.max(0, basePoisson * correction);
-                    
                     matrix.push({ h, a, p });
-
-                    // Acumuladores de mercado
-                    if (h > 0 && a > 0) probBTTS += p;
-                    if (h + a > 1.5) probOver15 += p;
-                    if (h + a > 2.5) probOver25 += p;
-                    if (h + a > 3.5) probOver35 += p;
                 }
             }
 
-            // Normalización de la matriz para sumar exacto 100%
             let totalSum = matrix.reduce((sum, item) => sum + item.p, 0);
             matrix.forEach(item => item.p = item.p / totalSum);
 
-            // Recalcular mercados con matriz normalizada
-            probBTTS = matrix.filter(item => item.h > 0 && item.a > 0).reduce((s, i) => s + i.p, 0);
-            probOver15 = matrix.filter(item => (item.h + item.a) > 1.5).reduce((s, i) => s + i.p, 0);
-            probOver25 = matrix.filter(item => (item.h + item.a) > 2.5).reduce((s, i) => s + i.p, 0);
-            probOver35 = matrix.filter(item => (item.h + item.a) > 3.5).reduce((s, i) => s + i.p, 0);
+            // 1X2 y Doble Oportunidad
+            let p1 = matrix.filter(i => i.h > i.a).reduce((s, i) => s + i.p, 0);
+            let pX = matrix.filter(i => i.h === i.a).reduce((s, i) => s + i.p, 0);
+            let p2 = matrix.filter(i => i.h < i.a).reduce((s, i) => s + i.p, 0);
 
-            // Renderizar Mercados y Cuotas Justas (Cuota = 1 / Probabilidad)
-            const setMarket = (probId, oddId, prob) => {
+            let p1X = p1 + pX;
+            let p12 = p1 + p2;
+            let pX2 = pX + p2;
+
+            // Goles / Menos / BTTS
+            let probBTTS = matrix.filter(i => i.h > 0 && i.a > 0).reduce((s, i) => s + i.p, 0);
+            let probOver15 = matrix.filter(i => (i.h + i.a) > 1.5).reduce((s, i) => s + i.p, 0);
+            let probOver25 = matrix.filter(i => (i.h + i.a) > 2.5).reduce((s, i) => s + i.p, 0);
+            let probOver35 = matrix.filter(i => (i.h + i.a) > 3.5).reduce((s, i) => s + i.p, 0);
+
+            // Hándicap Asiático (-0.5 / +0.5 equivalente a 1 y X2, -1.5 y +1.5)
+            let pH_minus05 = p1; // Gana por más de 0.5 goles (es decir, gana el partido)
+            let pH_plus05 = p1X; // Gana o empata
+            let pH_minus15 = matrix.filter(i => (i.h - i.a) >= 2).reduce((s, i) => s + i.p, 0);
+            let pH_plus15 = matrix.filter(i => (i.a - i.h) <= 1).reduce((s, i) => s + i.p, 0); // Pierde por menos de 2 o empata/gana
+
+            // RENDERIZAR RESULTADOS Y CUOTAS JUSTAS
+            const setVal = (probId, oddId, prob) => {
                 document.getElementById(probId).innerText = (prob * 100).toFixed(1) + '%';
-                let fairOdd = prob > 0 ? (1 / prob).toFixed(2) : '99.00';
-                document.getElementById(oddId).innerText = fairOdd;
+                let odd = prob > 0 ? (1 / prob).toFixed(2) : '99.00';
+                document.getElementById(oddId).innerText = odd;
             };
 
-            setMarket('bttsProb', 'bttsOdd', probBTTS);
-            setMarket('nbttsProb', 'nbttsOdd', 1 - probBTTS);
-            setMarket('over15Prob', 'over15Odd', probOver15);
-            setMarket('over25Prob', 'over25Odd', probOver25);
-            setMarket('over35Prob', 'over35Odd', probOver35);
+            setVal('prob1', 'odd1', p1);
+            setVal('probX', 'oddX', pX);
+            setVal('prob2', 'odd2', p2);
 
-            // Ordenar marcadores por probabilidad
+            setVal('prob1X', 'odd1X', p1X);
+            setVal('prob12', 'odd12', p12);
+            setVal('probX2', 'oddX2', pX2);
+
+            setVal('bttsProb', 'bttsOdd', probBTTS);
+            setVal('nbttsProb', 'nbttsOdd', 1 - probBTTS);
+
+            setVal('over15Prob', 'over15Odd', probOver15);
+            setVal('under15Prob', 'under15Odd', 1 - probOver15);
+
+            setVal('over25Prob', 'over25Odd', probOver25);
+            setVal('under25Prob', 'under25Odd', 1 - probOver25);
+
+            setVal('over35Prob', 'over35Odd', probOver35);
+            setVal('under35Prob', 'under35Odd', 1 - probOver35);
+
+            // Hándicaps
+            document.getElementById('hAhMinus05').innerText = (pH_minus05 * 100).toFixed(1) + '%';
+            document.getElementById('oddAhMinus05').innerText = (1 / pH_minus05).toFixed(2);
+            document.getElementById('hAhPlus05').innerText = (pH_plus05 * 100).toFixed(1) + '%';
+            document.getElementById('oddAhPlus05').innerText = (1 / pH_plus05).toFixed(2);
+
+            document.getElementById('hAhMinus15').innerText = (pH_minus15 * 100).toFixed(1) + '%';
+            document.getElementById('oddAhMinus15').innerText = pH_minus15 > 0 ? (1 / pH_minus15).toFixed(2) : '99.00';
+            document.getElementById('hAhPlus15').innerText = (pH_plus15 * 100).toFixed(1) + '%';
+            document.getElementById('oddAhPlus15').innerText = (1 / pH_plus15).toFixed(2);
+
+            // Top Marcadores
             matrix.sort((x, y) => y.p - x.p);
-
-            // Top 4 Marcadores
             const topScoresDiv = document.getElementById('topScores');
             topScoresDiv.innerHTML = '';
             for (let i = 0; i < 4; i++) {
